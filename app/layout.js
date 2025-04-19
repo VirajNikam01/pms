@@ -8,7 +8,7 @@ export default function RootLayout({ children }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/icon512_rounded.png" />
       </head>
-      <body>{children}</body>
+      <body className="select-none">{children}</body>
     </html>
   );
 }

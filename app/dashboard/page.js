@@ -11,11 +11,15 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4 sm:p-6 lg:p-8 relative">
       <header className="w-full max-w-6xl flex justify-between items-center mb-8">
-        <div className="text-gray-800 font-semibold text-lg sm:text-xl">Home</div>
+        <div className="text-gray-800 font-semibold text-lg sm:text-xl">
+          Home
+        </div>
         <div className="flex space-x-2 overflow-x-auto scrollbar-hide">
           <button
             className={`px-2 sm:px-4 py-1 sm:py-2 rounded-full text-sm sm:text-base whitespace-nowrap ${
-              activeTab === "myTasks" ? "bg-white shadow-md text-gray-800" : "bg-gray-200 text-gray-600"
+              activeTab === "myTasks"
+                ? "bg-white shadow-md text-gray-800"
+                : "bg-gray-200 text-gray-600"
             }`}
             onClick={() => setActiveTab("myTasks")}
           >
@@ -23,7 +27,9 @@ export default function Home() {
           </button>
           <button
             className={`px-2 sm:px-4 py-1 sm:py-2 rounded-full text-sm sm:text-base whitespace-nowrap ${
-              activeTab === "inProgress" ? "bg-white shadow-md text-gray-800" : "bg-gray-200 text-gray-600"
+              activeTab === "inProgress"
+                ? "bg-white shadow-md text-gray-800"
+                : "bg-gray-200 text-gray-600"
             }`}
             onClick={() => setActiveTab("inProgress")}
           >
@@ -31,7 +37,9 @@ export default function Home() {
           </button>
           <button
             className={`px-2 sm:px-4 py-1 sm:py-2 rounded-full text-sm sm:text-base whitespace-nowrap ${
-              activeTab === "completed" ? "bg-white shadow-md text-gray-800" : "bg-gray-200 text-gray-600"
+              activeTab === "completed"
+                ? "bg-white shadow-md text-gray-800"
+                : "bg-gray-200 text-gray-600"
             }`}
             onClick={() => setActiveTab("completed")}
           >
@@ -43,7 +51,7 @@ export default function Home() {
 
       <main className="w-full max-w-6xl bg-white rounded-lg shadow-md p-6 flex-grow">
         <h1 className="text-4xl font-bold text-indigo-900 mb-4">
-          Hello Rohan!
+          Hello Viraj!
         </h1>
         <p className="text-gray-700 mb-6">Have a nice day.</p>
 
