@@ -94,13 +94,13 @@ export default function Home() {
       <footer className="w-full max-w-6xl fixed bottom-0 left-1/2 transform -translate-x-1/2 bg-white p-4 flex justify-around items-center shadow-md z-10">
         <div
           className="text-gray-700 cursor-pointer hover:text-indigo-600"
-          onClick={() => router.push("/home")}
+          onClick={() => router.push("/dashboard")}
         >
           🏠
         </div>
         <div
           className="text-gray-700 cursor-pointer hover:text-indigo-600"
-          onClick={() => router.push("/calendar")}
+          onClick={() => router.push("/user")}
         >
           📅
         </div>
