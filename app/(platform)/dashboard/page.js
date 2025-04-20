@@ -1,78 +1,156 @@
 "use client";
 
-import React, { useState } from "react";
-// import MainLayout from "@/components/MainLayout";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Plus, CheckCircle, Trash2 } from "lucide-react";
 
-export default function Home() {
-  const [activeTab, setActiveTab] = useState("myTasks");
+const TaskList = () => {
+  // Initialize tasks from localStorage or empty array
+  const [tasks, setTasks] = useState(() => {
+    const savedTasks = localStorage.getItem("tasks");
+    return savedTasks ? JSON.parse(savedTasks) : [];
+  });
+  const [newTask, setNewTask] = useState("");
+
+  // Update localStorage whenever tasks change
+  useEffect(() => {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }, [tasks]);
+
+  // Handle adding a new task
+  const handleAddTask = (e) => {
+    e.preventDefault();
+    if (newTask.trim()) {
+      setTasks([...tasks, { id: Date.now(), text: newTask, completed: false }]);
+      setNewTask("");
+    }
+  };
+
+  // Handle toggling task completion
+  const handleToggleComplete = (id) => {
+    setTasks(
+      tasks.map((task) =>
+        task.id === id ? { ...task, completed: !task.completed } : task
+      )
+    );
+  };
+
+  // Handle deleting a task
+  const handleDeleteTask = (id) => {
+    setTasks(tasks.filter((task) => task.id !== id));
+  };
+
+  // Animation variants for task cards
+  const taskVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+    exit: { opacity: 0, x: -100, transition: { duration: 0.3 } },
+  };
+
+  // Animation variants for the add button
+  const buttonVariants = {
+    idle: { scale: 1 },
+    pulse: {
+      scale: 1.1,
+      transition: { repeat: Infinity, duration: 0.8, repeatType: "reverse" },
+    },
+  };
 
   return (
-    <div>
-      <header className="w-full max-w-6xl flex justify-between items-center mb-8">
-        <div className="text-gray-800 font-semibold text-lg sm:text-xl">
-          Home
-        </div>
-        <div className="flex space-x-2 overflow-x-auto scrollbar-hide">
-          {["myTasks", "inProgress", "completed"].map((tab) => (
-            <button
-              key={tab}
-              className={`px-2 sm:px-4 py-1 sm:py-2 rounded-full text-sm sm:text-base whitespace-nowrap ${
-                activeTab === tab
-                  ? "bg-white shadow-md text-gray-800"
-                  : "bg-gray-200 text-gray-600"
-              }`}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab === "myTasks"
-                ? "My Tasks"
-                : tab === "inProgress"
-                ? "In-progress"
-                : "Completed"}
-            </button>
-          ))}
-        </div>
-        <div className="text-gray-800 font-semibold text-lg sm:text-xl">👤</div>
-      </header>
-
-      <main className="w-full max-w-6xl bg-white rounded-lg shadow-md p-6 flex-grow">
-        <h1 className="text-4xl font-bold text-indigo-900 mb-4">
-          Hello Viraj!
+    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+      <div className="w-full max-w-md bg-gray-800 rounded-lg shadow-lg p-6">
+        {/* Header */}
+        <h1 className="text-2xl font-bold text-white mb-6 text-center">
+          Task Manager
         </h1>
-        <p className="text-gray-700 mb-6">Have a nice day.</p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div className="bg-indigo-700 text-white p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold mb-2">Project 1</h2>
-            <p className="text-lg">Front-End Development</p>
-            <p className="text-sm text-indigo-100 mt-2">October 20, 2020</p>
-          </div>
-          <div className="bg-indigo-500 text-white p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold mb-2">Project 2</h2>
-            <p className="text-lg">Back-End Development</p>
-            <p className="text-sm text-indigo-100 mt-2">October 24, 2020</p>
-          </div>
-        </div>
+        {/* Add Task Form */}
+        <form onSubmit={handleAddTask} className="flex gap-2 mb-6">
+          <input
+            type="text"
+            value={newTask}
+            onChange={(e) => setNewTask(e.target.value)}
+            placeholder="Add a new task..."
+            className="flex-1 p-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            aria-label="New task input"
+          />
+          <motion.button
+            type="submit"
+            variants={buttonVariants}
+            initial="idle"
+            animate="pulse"
+            className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-600"
+            disabled={!newTask.trim()}
+            aria-label="Add task"
+          >
+            <Plus size={24} />
+          </motion.button>
+        </form>
 
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold text-indigo-900 mb-4">
-            Progress
-          </h2>
-          <div className="space-y-4">
-            {[1, 2].map((_, idx) => (
-              <div
-                key={idx}
-                className="flex items-center bg-gray-50 p-4 rounded-lg shadow-sm"
+        {/* Task List */}
+        <div className="space-y-3">
+          <AnimatePresence>
+            {tasks.map((task, index) => (
+              <motion.div
+                key={task.id}
+                variants={taskVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                layout
+                transition={{ delay: index * 0.1 }}
+                className={`flex items-center justify-between p-3 rounded-lg ${
+                  task.completed ? "bg-green-900" : "bg-gray-700"
+                } border ${
+                  task.completed ? "border-green-700" : "border-gray-600"
+                }`}
               >
-                <div className="mr-4 text-gray-700">📋</div>
-                <div>
-                  <p className="font-medium text-gray-800">Design Changes</p>
-                  <p className="text-gray-600 text-sm">2 Days ago</p>
+                <div className="flex items-center gap-2">
+                  <motion.button
+                    onClick={() => handleToggleComplete(task.id)}
+                    whileTap={{ scale: 0.9 }}
+                    className="text-gray-300"
+                    aria-label={`Mark task ${task.text} as ${
+                      task.completed ? "incomplete" : "complete"
+                    }`}
+                  >
+                    <CheckCircle
+                      size={24}
+                      className={
+                        task.completed ? "text-green-400" : "text-gray-500"
+                      }
+                    />
+                  </motion.button>
+                  <span
+                    className={`${
+                      task.completed
+                        ? "line-through text-gray-400"
+                        : "text-white"
+                    }`}
+                  >
+                    {task.text}
+                  </span>
                 </div>
-              </div>
+                <motion.button
+                  onClick={() => handleDeleteTask(task.id)}
+                  whileTap={{ scale: 0.9 }}
+                  className="text-red-400 hover:text-red-500"
+                  aria-label={`Delete task ${task.text}`}
+                >
+                  <Trash2 size={24} />
+                </motion.button>
+              </motion.div>
             ))}
-          </div>
+          </AnimatePresence>
+          {tasks.length === 0 && (
+            <p className="text-center text-gray-400">
+              No tasks yet. Add one above!
+            </p>
+          )}
         </div>
-      </main>
+      </div>
     </div>
   );
-}
+};
+
+export default TaskList;

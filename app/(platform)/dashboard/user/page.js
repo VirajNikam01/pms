@@ -52,7 +52,7 @@ export default function Page() {
   const insertBulkUsers = async () => {
     setSubmitting(true);
     try {
-      const users = generateDummyUsers(100);
+      const users = generateDummyUsers(500);
       await db.insert(db.schema.contact).values(users);
       await fetchUsers();
     } catch (err) {
@@ -67,11 +67,11 @@ export default function Page() {
     const dummyUsers = [];
     for (let i = 0; i < count; i++) {
       dummyUsers.push({
-        first: `John${i}`,
-        last: `Doe${i}`,
-        avatar: `https://images.unsplash.com/photo-1743976955438-8f4743e06f8d?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D`,
-        twitter: `@johndoe${i}`,
-        notes: `This is a dummy note for John Doe ${i}.`,
+        first: `Viraj`,
+        last: `Nikam`,
+        avatar: `https://avatars.githubusercontent.com/u/140100146?v=4`,
+        twitter: `@virajnikam${i}`,
+        notes: `This is a dummy note for Viraj Nikam ${i}.`,
         favorite: i % 10 === 0,
       });
     }
@@ -187,7 +187,7 @@ export default function Page() {
                   : "bg-purple-600 hover:bg-purple-700"
               }`}
             >
-              {submitting ? "Inserting..." : "Add 100 Dummy Users"}
+              {submitting ? "Inserting..." : "Add 500 Dummy Users"}
             </button>
           </div>
         </div>
@@ -313,8 +313,9 @@ function UserCard({ user }) {
           alt={`${user.first} ${user.last}`}
           width={60}
           height={60}
-          className="w-15 h-15 rounded-full object-cover border-2 border-blue-500"
+          className="w-[60px] h-[60px] rounded-full object-cover border-2 border-blue-500"
         />
+
         <div>
           <h2 className="text-lg font-semibold text-gray-800">
             {user.first} {user.last}

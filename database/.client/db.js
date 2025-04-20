@@ -4,6 +4,7 @@ import { PgDialect } from "drizzle-orm/pg-core/dialect";
 import { drizzle } from "drizzle-orm/pglite";
 import migrations from "./migrations/export.json";
 import * as schema from "./schema";
+import { clearAllBrowserStorage } from "@/utils/browser-storage";
 
 const useDb = () => {
   const [db, setDb] = useState(null);
@@ -12,12 +13,12 @@ const useDb = () => {
 
   useEffect(() => {
     const initializeDb = async () => {
+      // await clearAllBrowserStorage();
       const isDev = process.env.NODE_ENV === "development";
-      const dbName = isDev ? "remix-contacts-dev" : "remix-contacts";
+      const dbName = isDev ? "Mega-PMS-dev" : "Mega-PMS";
       const MIGRATION_KEY = `db-migrated-${dbName}`;
 
       try {
-        // Create the new local db if not already created
         const client = await PGlite.create({
           dataDir: `idb://${dbName}`,
         });
@@ -27,23 +28,22 @@ const useDb = () => {
           logger: isDev,
         });
 
-        // Only run migration if not already done
         const hasMigrated = localStorage.getItem(MIGRATION_KEY);
+
+        // Only run migration if needed
         if (!hasMigrated) {
           const start = performance.now();
           const migrationDialect = new PgDialect();
           await migrationDialect.migrate(migrations, _db._.session, dbName);
           localStorage.setItem(MIGRATION_KEY, "true");
-          console.info(
-            `✅ Local database ready in ${performance.now() - start}ms`
-          );
+          console.info(`✅ Migration done in ${performance.now() - start}ms`);
         }
 
-        // After migration, set db
+        // Only set DB after migration is guaranteed
         setDb(Object.assign(_db, { schema }));
         setLoading(false);
       } catch (err) {
-        console.error("❌ Local database schema migration failed", err);
+        console.error("❌ Failed to initialize DB", err);
         setError(err);
         setLoading(false);
       }
