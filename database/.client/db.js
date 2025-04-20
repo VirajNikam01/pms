@@ -14,6 +14,7 @@ const useDb = () => {
     const initializeDb = async () => {
       const isDev = process.env.NODE_ENV === "development";
       const dbName = isDev ? "remix-contacts-dev" : "remix-contacts";
+      const MIGRATION_KEY = `db-migrated-${dbName}`;
 
       try {
         // Create the new local db if not already created
@@ -26,19 +27,13 @@ const useDb = () => {
           logger: isDev,
         });
 
-        // prevent multiple schema migrations to be run
-        let isLocalDBSchemaSynced = false;
-
-        if (!isLocalDBSchemaSynced) {
+        // Only run migration if not already done
+        const hasMigrated = localStorage.getItem(MIGRATION_KEY);
+        if (!hasMigrated) {
           const start = performance.now();
           const migrationDialect = new PgDialect();
-
-          // Ensure the session is created and passed correctly
           await migrationDialect.migrate(migrations, _db._.session, dbName);
-
-          // Set flag once migrations are successful
-          isLocalDBSchemaSynced = true;
-
+          localStorage.setItem(MIGRATION_KEY, "true");
           console.info(
             `✅ Local database ready in ${performance.now() - start}ms`
           );
@@ -46,16 +41,16 @@ const useDb = () => {
 
         // After migration, set db
         setDb(Object.assign(_db, { schema }));
-        setLoading(false); // Set loading to false after db is set
+        setLoading(false);
       } catch (err) {
         console.error("❌ Local database schema migration failed", err);
-        setError(err); // Set error state
-        setLoading(false); // Set loading to false in case of error
+        setError(err);
+        setLoading(false);
       }
     };
 
     initializeDb();
-  }, []); // Empty dependency array ensures this runs only once on mount
+  }, []);
 
   return { db, loading, error };
 };
