@@ -49,6 +49,35 @@ export default function Page() {
     }
   };
 
+  const insertBulkUsers = async () => {
+    setSubmitting(true);
+    try {
+      const users = generateDummyUsers(100);
+      await db.insert(db.schema.contact).values(users);
+      await fetchUsers();
+    } catch (err) {
+      console.error("Bulk insert failed:", err);
+      setError("Failed to insert bulk users.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const generateDummyUsers = (count = 100) => {
+    const dummyUsers = [];
+    for (let i = 0; i < count; i++) {
+      dummyUsers.push({
+        first: `John${i}`,
+        last: `Doe${i}`,
+        avatar: `https://images.unsplash.com/photo-1743976955438-8f4743e06f8d?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D`,
+        twitter: `@johndoe${i}`,
+        notes: `This is a dummy note for John Doe ${i}.`,
+        favorite: i % 10 === 0,
+      });
+    }
+    return dummyUsers;
+  };
+
   const deleteAllEntries = async () => {
     setSubmitting(true);
     try {
@@ -78,12 +107,10 @@ export default function Page() {
 
     const headers = Object.keys(data[0]);
     const csvRows = [
-      headers.join(","), // header row
+      headers.join(","),
       ...data.map((row) =>
         headers
-          .map((field) =>
-            `"${String(row[field] ?? "").replace(/"/g, '""')}"` // escape quotes
-          )
+          .map((field) => `"${String(row[field] ?? "").replace(/"/g, '""')}"`)
           .join(",")
       ),
     ];
@@ -100,7 +127,7 @@ export default function Page() {
     a.download = `contacts-${new Date().toISOString()}.csv`;
     a.click();
 
-    URL.revokeObjectURL(url); // cleanup
+    URL.revokeObjectURL(url);
   };
 
   const handleSubmit = async (e) => {
@@ -124,7 +151,8 @@ export default function Page() {
       <div className="max-w-7xl mx-auto space-y-8">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-            User Directory <span className="text-blue-500">({data.length})</span>
+            User Directory{" "}
+            <span className="text-blue-500">({data.length})</span>
           </h1>
           <div className="flex flex-wrap gap-2">
             <button
@@ -137,7 +165,9 @@ export default function Page() {
               onClick={deleteAllEntries}
               disabled={submitting}
               className={`px-3 py-1.5 rounded-lg text-sm shadow text-white ${
-                submitting ? "bg-red-300 cursor-not-allowed" : "bg-red-500 hover:bg-red-600"
+                submitting
+                  ? "bg-red-300 cursor-not-allowed"
+                  : "bg-red-500 hover:bg-red-600"
               }`}
             >
               {submitting ? "Deleting..." : "Delete All"}
@@ -148,11 +178,24 @@ export default function Page() {
             >
               Export CSV
             </button>
+            <button
+              onClick={insertBulkUsers}
+              disabled={submitting}
+              className={`px-3 py-1.5 rounded-lg text-sm shadow text-white ${
+                submitting
+                  ? "bg-purple-300 cursor-not-allowed"
+                  : "bg-purple-600 hover:bg-purple-700"
+              }`}
+            >
+              {submitting ? "Inserting..." : "Add 100 Dummy Users"}
+            </button>
           </div>
         </div>
 
         {error && (
-          <div className="bg-red-100 text-red-700 p-3 rounded-lg text-sm">{error}</div>
+          <div className="bg-red-100 text-red-700 p-3 rounded-lg text-sm">
+            {error}
+          </div>
         )}
 
         {data.length > 0 ? (
