@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation"; // Import useRouter for navigation
+import { useRouter } from "next/navigation";
 import { clearAllBrowserStorage } from "@/utils/browser-storage";
 import useDb from "@/database/.client/db";
-import { motion, AnimatePresence } from "framer-motion"; // For animations
+import { motion, AnimatePresence } from "framer-motion";
 
 const Settings = () => {
   const [loading, setLoading] = useState(false);
@@ -13,7 +13,7 @@ const Settings = () => {
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const { db, loading: dbLoading, error: dbError } = useDb();
-  const router = useRouter(); // Initialize router
+  const router = useRouter();
 
   const clearWebStorage = async () => {
     setLoading(true);
@@ -21,7 +21,7 @@ const Settings = () => {
       await clearAllBrowserStorage();
       setShowSuccess(true);
       setTimeout(() => {
-        router.push("/"); // Redirect to home page instead of reloading
+        router.push("/");
       }, 1500);
     } catch (error) {
       console.error("Error:", error);
@@ -64,8 +64,7 @@ const Settings = () => {
               Web Storage
             </h3>
             <p className="text-gray-600 text-sm sm:text-base mb-4">
-              Clear your browser's storage for a fresh start. This will remove
-              all saved data.
+              Clear your browser's storage for a fresh start. This will remove all saved data.
             </p>
             <button
               onClick={handleShowConfirmation}
@@ -129,8 +128,7 @@ const Settings = () => {
                 Are you sure?
               </h3>
               <p className="text-gray-600 text-sm mb-6">
-                This will clear all browser storage and reinitialize the
-                database. This cannot be undone.
+                This will clear all browser storage and reinitialize the database. This cannot be undone.
               </p>
               <div className="flex justify-between gap-4">
                 <button

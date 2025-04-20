@@ -5,9 +5,9 @@ import { usePGlite } from "@electric-sql/pglite-react";
 import Image from "next/image";
 
 // Configuration for avatar base URL
-const AVATAR_BASE_URL = "https://ui-avatars.com/api/"; // Default avatar service
-const ALLOWED_AVATAR_DOMAINS = ["ui-avatars.com"]; // Restrict avatar sources
-const FALLBACK_AVATAR = "/fallback-avatar.png"; // Fallback image in public/
+const AVATAR_BASE_URL = "https://ui-avatars.com/api/";
+const ALLOWED_AVATAR_DOMAINS = ["ui-avatars.com", "avatars.githubusercontent.com"];
+const FALLBACK_AVATAR = "/fallback-avatar.png";
 
 // Reusable Button component
 function Button({ children, onClick, disabled, className, loading }) {
@@ -46,7 +46,6 @@ export default function UserDirectory() {
     try {
       const parsedUrl = new URL(url);
       const hostname = parsedUrl.hostname.toLowerCase();
-      // Allow only specific domains for security
       return ALLOWED_AVATAR_DOMAINS.some((domain) => hostname.includes(domain));
     } catch {
       return false;
@@ -94,7 +93,7 @@ export default function UserDirectory() {
   const insertBulkUsers = async () => {
     setSubmitting(true);
     try {
-      const users = generateDummyUsers(50); // Reduced for performance
+      const users = generateDummyUsers(50);
       await db.insert(db.schema.contact).values(users);
       await fetchUsers();
     } catch (err) {
@@ -153,15 +152,7 @@ export default function UserDirectory() {
   // Convert to CSV
   const convertToCSV = (data) => {
     if (!data || data.length === 0) return "";
-    const headers = [
-      "id",
-      "first",
-      "last",
-      "avatar",
-      "twitter",
-      "notes",
-      "favorite",
-    ];
+    const headers = ["id", "first", "last", "avatar", "twitter", "notes", "favorite"];
     const csvRows = [
       headers.join(","),
       ...data.map((row) =>
@@ -196,10 +187,9 @@ export default function UserDirectory() {
       return;
     }
     if (!validateAvatarUrl(formData.avatar)) {
+      // Use escaped single quotes or avoid special characters
       setError(
-        `Avatar URL must be from allowed domains: ${ALLOWED_AVATAR_DOMAINS.join(
-          ", "
-        )}.`
+        `Avatar URL must be from allowed domains: ${ALLOWED_AVATAR_DOMAINS.join(", ")}.`
       );
       return;
     }
@@ -232,11 +222,7 @@ export default function UserDirectory() {
   }, [fetchUsers]);
 
   if (loading || !db) {
-    return (
-      <LoadingScreen
-        message={db ? "Fetching data..." : "Initializing database..."}
-      />
-    );
+    return <LoadingScreen message={db ? "Fetching data..." : "Initializing database..."} />;
   }
 
   return (
@@ -244,14 +230,10 @@ export default function UserDirectory() {
       <div className="max-w-7xl mx-auto space-y-8">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-            User Directory{" "}
-            <span className="text-blue-500">({data.length})</span>
+            User Directory <span className="text-blue-500">({data.length})</span>
           </h1>
           <div className="flex flex-wrap gap-2">
-            <Button
-              onClick={() => setShowModal(true)}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
+            <Button onClick={() => setShowModal(true)} className="bg-blue-600 hover:bg-blue-700">
               Add User
             </Button>
             <Button
@@ -262,10 +244,7 @@ export default function UserDirectory() {
             >
               Delete All
             </Button>
-            <Button
-              onClick={exportToCSV}
-              className="bg-green-600 hover:bg-green-700"
-            >
+            <Button onClick={exportToCSV} className="bg-green-600 hover:bg-green-700">
               Export CSV
             </Button>
             <Button
@@ -281,13 +260,13 @@ export default function UserDirectory() {
 
         {error && (
           <div className="bg-red-100 text-red-700 p-3 rounded-lg text-sm flex justify-between items-center">
-            {error}
+            <span>{error}</span>
             <button
               onClick={() => setError(null)}
               className="text-red-700 hover:text-red-900"
               aria-label="Dismiss error"
             >
-              ×
+              &times;
             </button>
           </div>
         )}
@@ -299,9 +278,7 @@ export default function UserDirectory() {
             ))}
           </div>
         ) : (
-          <div className="text-center text-gray-500 text-base">
-            No user data available.
-          </div>
+          <div className="text-center text-gray-500 text-base">No user data available.</div>
         )}
       </div>
 
@@ -313,10 +290,7 @@ export default function UserDirectory() {
             autoComplete="off"
             aria-labelledby="add-user-form"
           >
-            <h2
-              id="add-user-form"
-              className="text-lg font-semibold text-gray-800"
-            >
+            <h2 id="add-user-form" className="text-lg font-semibold text-gray-800">
               Add New User
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -325,9 +299,7 @@ export default function UserDirectory() {
                 className="p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400 bg-white text-black placeholder-gray-500 text-sm"
                 placeholder="First name"
                 value={formData.first}
-                onChange={(e) =>
-                  setFormData({ ...formData, first: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, first: e.target.value })}
                 aria-required="true"
               />
               <input
@@ -335,46 +307,36 @@ export default function UserDirectory() {
                 className="p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400 bg-white text-black placeholder-gray-500 text-sm"
                 placeholder="Last name"
                 value={formData.last}
-                onChange={(e) =>
-                  setFormData({ ...formData, last: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, last: e.target.value })}
                 aria-required="true"
               />
             </div>
             <input
               required
-              className="w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400 bg-white text-black placeholder-gray-500 text-sm"
+              className="w-full p-2.5 border border-gray-/card rounded-md focus:ring-2 focus:ring-blue-400 bg-white text-black placeholder-gray-500 text-sm"
               placeholder="Avatar URL (e.g., from ui-avatars.com)"
               value={formData.avatar}
-              onChange={(e) =>
-                setFormData({ ...formData, avatar: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, avatar: e.target.value })}
               aria-required="true"
             />
             <input
               className="w-full p-2.5 border border-gray-300 rounded-md bg-white text-black placeholder-gray-500 text-sm"
               placeholder="Twitter handle (optional)"
               value={formData.twitter}
-              onChange={(e) =>
-                setFormData({ ...formData, twitter: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, twitter: e.target.value })}
             />
             <textarea
               className="w-full p-2.5 border border-gray-300 rounded-md bg-white text-black placeholder-gray-500 text-sm"
               placeholder="Notes (optional)"
               rows={3}
               value={formData.notes}
-              onChange={(e) =>
-                setFormData({ ...formData, notes: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
             />
             <label className="flex items-center space-x-2">
               <input
                 type="checkbox"
                 checked={formData.favorite}
-                onChange={(e) =>
-                  setFormData({ ...formData, favorite: e.target.checked })
-                }
+                onChange={(e) => setFormData({ ...formData, favorite: e.target.checked })}
               />
               <span className="text-gray-700 text-sm">Mark as favorite</span>
             </label>
@@ -406,42 +368,40 @@ export default function UserDirectory() {
 
 function UserCard({ user }) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition p-5 space-y-4 border border-gray-100">
-        <div className="flex items-center space-x-3">
-          <Image
-            src={user.avatar}
-            alt={`${user.first} ${user.last}`}
-            width={60}
-            height={60}
-            className="w-[60px] h-[60px] rounded-full object-cover border-2 border-blue-500"
-            onError={(e) => (e.currentTarget.src = FALLBACK_AVATAR)}
-          />
-          <div>
-            <h2 className="text-lg font-semibold text-gray-800">
-              {user.first} {user.last}
-            </h2>
-            {user.twitter && (
-              <p className="text-xs text-blue-500">
-                <a
-                  href={`https://twitter.com/${user.twitter.replace("@", "")}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {user.twitter}
-                </a>
-              </p>
-            )}
-          </div>
+    <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition p-5 space-y-4 border border-gray-100">
+      <div className="flex items-center space-x-3">
+        <Image
+          src={user.avatar}
+          alt={`${user.first} ${user.last}`}
+          width={60}
+          height={60}
+          className="w-[60px] h-[60px] rounded-full object-cover border-2 border-blue-500"
+          onError={(e) => (e.currentTarget.src = "/fallback-avatar.png")}
+        />
+        <div>
+          <h2 className="text-lg font-semibold text-gray-800">
+            {user.first} {user.last}
+          </h2>
+          {user.twitter && (
+            <p className="text-xs text-blue-500">
+              <a
+                href={`https://twitter.com/${user.twitter.replace("@", "")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {user.twitter}
+              </a>
+            </p>
+          )}
         </div>
-        {user.notes && <p className="text-gray-700 text-sm">{user.notes}</p>}
-        {user.favorite && (
-          <div className="flex items-center text-yellow-500 text-xs font-medium space-x-1">
-            <span>★</span>
-            <span>Favorite Contact</span>
-          </div>
-        )}
       </div>
+      {user.notes && <p className="text-gray-700 text-sm">{user.notes}</p>}
+      {user.favorite && (
+        <div className="flex items-center text-yellow-500 text-xs font-medium space-x-1">
+          <span>★</span>
+          <span>Favorite Contact</span>
+        </div>
+      )}
     </div>
   );
 }
@@ -465,7 +425,7 @@ function Modal({ children, onClose }) {
           className="absolute top-2 right-2 text-gray-400 hover:text-black text-xl"
           aria-label="Close modal"
         >
-          ×
+          &times;
         </button>
         {children}
       </div>
