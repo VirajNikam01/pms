@@ -1,13 +1,16 @@
-import withPWA from 'next-pwa';
+import withPWA from "next-pwa";
 
 const pwaConfig = withPWA({
   register: true, // Automatically register the service worker
   skipWaiting: true, // Skip waiting for service worker activation
-  disable: process.env.NODE_ENV === 'development', // Disable PWA in development
+  disable: process.env.NODE_ENV === "development", // Disable PWA in development
 });
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  images: {
+    domains: ["example.com", "images.unsplash.com"],
+  },
   webpack: (config) => {
     config.experiments = {
       ...config.experiments,
